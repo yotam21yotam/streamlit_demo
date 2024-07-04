@@ -10,10 +10,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Title of the app
-st.title("Interactive Machine Learning App by Yotam")
+st.title("Interactive Machine Learning and Distribution App")
 
 # Header
-st.header("Explore Different Models and Visualizations")
+st.header("Explore Different Models, Visualizations, and Distributions")
 
 # Sidebar input
 st.sidebar.header("User Input Features")
@@ -80,34 +80,19 @@ plt.ylabel('Target')
 plt.title('Feature 1 vs Target')
 st.pyplot(fig)
 
-# Add success, warning, info, and error messages
-st.success("The model ran successfully!")
-st.warning("This is a simple example.")
-st.info("You can add more features and data.")
-st.error("Make sure your input data is correct.")
+# Standard Normal Distribution
+st.sidebar.header("Standard Normal Distribution")
+mean = st.sidebar.number_input("Mean", value=0.0)
+std = st.sidebar.number_input("Standard Deviation", value=1.0)
+size = st.sidebar.number_input("Number of Samples", value=1000, step=100)
 
-# Checkbox example
-if st.checkbox("Show raw data"):
-    st.subheader('Raw Data')
-    st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
+if st.sidebar.button("Generate Distribution"):
+    data = np.random.normal(mean, std, size)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=True, ax=ax)
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title(f'Normal Distribution (mean={mean}, std={std})')
+    st.pyplot(fig)
 
-# Radio button example
-state = st.radio("What is your favorite Machine Learning model?", 
-                 ("Linear Regression", "Decision Tree", "Random Forest"))
-
-if state == 'Linear Regression':
-    st.success("Linear Regression is a great choice!")
-elif state == 'Decision Tree':
-    st.success("Decision Tree is a great choice!")
-else:
-    st.success("Random Forest is a great choice!")
-
-occupation = st.selectbox("What is your role?", ["Student", "Data Scientist", "Engineer"])
-st.text(f"Selected option is {occupation}")
-
-# Button example
-if st.button("Example Button"):
-    st.error("You clicked the button!")
-
-st.sidebar.header("About")
-st.sidebar.text("Created by Yotam")
+# Add success, warning, info, and 
