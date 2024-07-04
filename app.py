@@ -31,7 +31,8 @@ st.write(data.isnull().sum())
 
 # Correlation analysis
 st.subheader("Correlation Analysis")
-corr = data.corr(method='pearson')
+numeric_data = data.select_dtypes(include=[np.number])  # Select only numeric columns
+corr = numeric_data.corr(method='pearson')
 st.write(corr)
 
 # Correlation heatmap
@@ -62,13 +63,14 @@ model.fit(X_train, y_train)
 
 # Predict and evaluate
 y_pred = model.predict(X_test)
-y_prob = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+y_prob = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
 
 # Evaluation metrics
 st.subheader(f'{model_choice} Evaluation Metrics')
 
 if y_prob is not None:
-    auc = roc_auc_score(pd.get_dummies(y_test).values, model.predict_proba(X_test), multi_class='ovr')
+    y_prob_multiclass = pd.get_dummies(y_test)
+    auc = roc_auc_score(y_prob_multiclass, y_prob, multi_class='ovr')
     st.write(f"AUC: {auc:.2f}")
 
 cm = confusion_matrix(y_test, y_pred)
@@ -88,14 +90,18 @@ st.pyplot(fig)
 
 # ROC Curve
 if y_prob is not None:
-    fpr, tpr, _ = roc_curve(pd.get_dummies(y_test).values.ravel(), y_prob.ravel())
-    fig, ax = plt.subplots()
-    ax.plot(fpr, tpr, color='darkorange', lw=2)
-    ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    fpr = {}
+    tpr = {}
+    for i, label in enumerate(y_prob_multiclass.columns):
+        fpr[label], tpr[label], _ = roc_curve(y_prob_multiclass.iloc[:, i], y_prob[:, i])
+        plt.plot(fpr[label], tpr[label], label=f'ROC curve (area = {auc:.2f}) for label {label}')
+    
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.title('ROC Curve')
-    st.pyplot(fig)
+    plt.legend(loc="lower right")
+    st.pyplot(plt)
 
 # User input for prediction
 st.sidebar.header("User Input for Prediction")
