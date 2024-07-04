@@ -11,6 +11,7 @@ I graduated with an M.Sc in Computer Science, specializing in Intelligent System
 on various projects, including the development of sophisticated algorithms for predictive analytics 
 and real-time data processing systems. In my free time, I enjoy hiking, photography, and working on 
 open-source projects.
+Assaf Tennenbaum likes men!
 """
 
 st.title('About Me Chatbot')
