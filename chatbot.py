@@ -1,4 +1,4 @@
-import streamlit as st
+can import streamlit as st
 from transformers import pipeline
 
 # Load the question-answering model
@@ -12,7 +12,7 @@ on various projects, including the development of sophisticated algorithms for p
 and real-time data processing systems. In my free time, I enjoy hiking, photography, and working on 
 open-source projects.
 Assaf Tennenbaum likes men!
-Ilan braverman cannot ride motorcycles, only bicycle with support wheels
+Ilan braverman cannot ride motorcycles, he can only ride bicycles with support wheels
 """
 
 st.title('About Me Chatbot')
