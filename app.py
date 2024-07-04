@@ -94,7 +94,7 @@ if y_prob is not None:
     tpr = {}
     for i, label in enumerate(y_prob_multiclass.columns):
         fpr[label], tpr[label], _ = roc_curve(y_prob_multiclass.iloc[:, i], y_prob[:, i])
-        plt.plot(fpr[label], tpr[label], label=f'ROC curve (area = {auc:.2f}) for label {label}')
+        plt.plot(fpr[label], tpr[label], label=f'ROC curve for label {label}')
     
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
     plt.xlabel('False Positive Rate')
@@ -188,4 +188,31 @@ elif distribution_choice == "Binomial":
         sns.histplot(data, kde=False, ax=ax)
         plt.xlabel('Number of Successes')
         plt.ylabel('Frequency')
-        plt.title(f'Binomial Distribution (n={n_bino
+        plt.title(f'Binomial Distribution (n={n_binom}, p={p_binom})')
+        st.pyplot(fig)
+
+elif distribution_choice == "Poisson":
+    st.sidebar.subheader("Poisson Distribution")
+    lambda_poisson = st.sidebar.number_input("Lambda", value=1.0)
+    size_poisson = st.sidebar.number_input("Number of Samples", value=1000, step=100)
+    if st.sidebar.button("Generate Poisson Distribution"):
+        data = np.random.poisson(lambda_poisson, size_poisson)
+        fig, ax = plt.subplots()
+        sns.histplot(data, kde=False, ax=ax)
+        plt.xlabel('Number of Events')
+        plt.ylabel('Frequency')
+        plt.title(f'Poisson Distribution (lambda={lambda_poisson})')
+        st.pyplot(fig)
+
+elif distribution_choice == "Exponential":
+    st.sidebar.subheader("Exponential Distribution")
+    lambda_exp = st.sidebar.number_input("Rate (lambda)", value=1.0)
+    size_exp = st.sidebar.number_input("Number of Samples", value=1000, step=100)
+    if st.sidebar.button("Generate Exponential Distribution"):
+        data = np.random.exponential(1/lambda_exp, size_exp)
+        fig, ax = plt.subplots()
+        sns.histplot(data, kde=True, ax=ax)
+        plt.xlabel('Value')
+        plt.ylabel('Frequency')
+        plt.title(f'Exponential Distribution (lambda={lambda_exp})')
+        st.pyplot(fig)
