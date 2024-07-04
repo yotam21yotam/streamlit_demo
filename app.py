@@ -147,4 +147,45 @@ st.sidebar.header("Distributions")
 # Choose distribution
 distribution_choice = st.sidebar.selectbox(
     "Choose Distribution",
-    ["Normal", "Ber
+    ["Normal", "Bernoulli", "Binomial", "Poisson", "Exponential"]
+)
+
+if distribution_choice == "Normal":
+    st.sidebar.subheader("Normal Distribution")
+    mean = st.sidebar.number_input("Mean", value=0.0)
+    std = st.sidebar.number_input("Standard Deviation", value=1.0)
+    size = st.sidebar.number_input("Number of Samples", value=1000, step=100)
+    if st.sidebar.button("Generate Normal Distribution"):
+        data = np.random.normal(mean, std, size)
+        fig, ax = plt.subplots()
+        sns.histplot(data, kde=True, ax=ax)
+        plt.xlabel('Value')
+        plt.ylabel('Frequency')
+        plt.title(f'Normal Distribution (mean={mean}, std={std})')
+        st.pyplot(fig)
+
+elif distribution_choice == "Bernoulli":
+    st.sidebar.subheader("Bernoulli Distribution")
+    p = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
+    n = st.sidebar.number_input("Number of Experiments", value=100, step=10)
+    if st.sidebar.button("Generate Bernoulli Distribution"):
+        data = np.random.binomial(1, p, n)
+        fig, ax = plt.subplots()
+        sns.histplot(data, kde=False, discrete=True, ax=ax)
+        plt.xlabel('Outcome')
+        plt.ylabel('Frequency')
+        plt.title(f'Bernoulli Distribution (p={p}, n={n})')
+        st.pyplot(fig)
+
+elif distribution_choice == "Binomial":
+    st.sidebar.subheader("Binomial Distribution")
+    p_binom = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
+    n_binom = st.sidebar.number_input("Number of Trials", value=100, step=10)
+    size_binom = st.sidebar.number_input("Number of Samples", value=1000, step=100)
+    if st.sidebar.button("Generate Binomial Distribution"):
+        data = np.random.binomial(n_binom, p_binom, size_binom)
+        fig, ax = plt.subplots()
+        sns.histplot(data, kde=False, ax=ax)
+        plt.xlabel('Number of Successes')
+        plt.ylabel('Frequency')
+        plt.title(f'Binomial Distribution (n={n_bino
