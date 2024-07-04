@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Title of the app
-st.title("Simple Machine Learning App")
+st.title("Simple Machine Learning App by Yotam")
 
 # Header
 st.header("Linear Regression with User Data")
