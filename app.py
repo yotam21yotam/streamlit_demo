@@ -178,12 +178,7 @@ elif state == 'Decision Tree':
 else:
     st.success("Random Forest is a great choice!")
 
-occupation = st.selectbox("What is your role?", ["Student", "Data Scientist", "Engineer"])
-st.text(f"Selected option is {occupation}")
 
-# Button example
-if st.button("Example Button"):
-    st.error("You clicked the button!")
 
 st.sidebar.header("About")
 st.sidebar.text("Created by Yotam")
