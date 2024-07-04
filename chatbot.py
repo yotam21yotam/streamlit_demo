@@ -12,6 +12,7 @@ on various projects, including the development of sophisticated algorithms for p
 and real-time data processing systems. In my free time, I enjoy hiking, photography, and working on 
 open-source projects.
 Assaf Tennenbaum likes men!
+Ilan braverman cannot ride motorcycles, only bicycle with support wheels
 """
 
 st.title('About Me Chatbot')
