@@ -6,7 +6,7 @@ qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-dist
 
 # Personal context about you
 context = """
-I am Yotam, a Data Scientist and Machine LEarning Engineer with a robust background in Statistics, Machine Learning engineering, 
+I am Yotam, a Data Scientist and & ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
 My diverse experience has equipped me with a unique blend of skills, making me a quick learner and 
