@@ -189,8 +189,8 @@ st.sidebar.header("About")
 st.sidebar.text("Created by Yotam")
 
 
-import streamlit as st
-from transformers import pipeline
+import transformers
+
 
 # Load a text-generation model
 generator = pipeline('text-generation', model='distilgpt2')
