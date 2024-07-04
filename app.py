@@ -3,145 +3,84 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score, confusion_matrix, precision_score, recall_score, roc_curve
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Title of the app
-st.title("Iris Dataset Machine Learning App by Yotam")
+st.title("Interactive Machine Learning and Distribution App")
 
-# Load the Iris dataset
-@st.cache
-def load_data():
-    data = sns.load_dataset('iris')
-    return data
+# Header
+st.header("Explore Different Models, Visualizations, and Distributions")
 
-data = load_data()
-
-# Display the dataset
-st.subheader("Iris Dataset")
-st.write(data.head())
-
-# Data wrangling
-st.subheader("Data Wrangling")
-st.write("Checking for missing values:")
-st.write(data.isnull().sum())
-
-# Correlation analysis
-st.subheader("Correlation Analysis")
-numeric_data = data.select_dtypes(include=[np.number])  # Select only numeric columns
-corr = numeric_data.corr(method='pearson')
-st.write(corr)
-
-# Correlation heatmap
-fig, ax = plt.subplots()
-sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-plt.title('Correlation Heatmap')
-st.pyplot(fig)
-
-# Splitting data
-X = data.drop(columns=['species'])
-y = data['species']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Sidebar for model selection
-st.sidebar.header("Model Selection")
-
-models = {
-    "Logistic Regression": LogisticRegression(max_iter=200),
-    "Decision Tree": DecisionTreeClassifier(),
-    "Random Forest": RandomForestClassifier()
-}
-
-model_choice = st.sidebar.selectbox("Choose Model", list(models.keys()))
-model = models[model_choice]
-
-# Train the model
-model.fit(X_train, y_train)
-
-# Predict and evaluate
-y_pred = model.predict(X_test)
-y_prob = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
-
-# Evaluation metrics
-st.subheader(f'{model_choice} Evaluation Metrics')
-
-if y_prob is not None:
-    y_prob_multiclass = pd.get_dummies(y_test)
-    auc = roc_auc_score(y_prob_multiclass, y_prob, multi_class='ovr')
-    st.write(f"AUC: {auc:.2f}")
-
-cm = confusion_matrix(y_test, y_pred)
-precision = precision_score(y_test, y_pred, average='macro')
-recall = recall_score(y_test, y_pred, average='macro')
-
-st.write(f"Precision: {precision:.2f}")
-st.write(f"Recall: {recall:.2f}")
-
-# Confusion matrix
-fig, ax = plt.subplots()
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.title('Confusion Matrix')
-st.pyplot(fig)
-
-# ROC Curve
-if y_prob is not None:
-    fpr = {}
-    tpr = {}
-    for i, label in enumerate(y_prob_multiclass.columns):
-        fpr[label], tpr[label], _ = roc_curve(y_prob_multiclass.iloc[:, i], y_prob[:, i])
-        plt.plot(fpr[label], tpr[label], label=f'ROC curve for label {label}')
-    
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend(loc="lower right")
-    st.pyplot(plt)
-
-# User input for prediction
-st.sidebar.header("User Input for Prediction")
+# Sidebar input
+st.sidebar.header("User Input Features")
 
 def user_input_features():
-    sepal_length = st.sidebar.slider('Sepal length', float(data.sepal_length.min()), float(data.sepal_length.max()), float(data.sepal_length.mean()))
-    sepal_width = st.sidebar.slider('Sepal width', float(data.sepal_width.min()), float(data.sepal_width.max()), float(data.sepal_width.mean()))
-    petal_length = st.sidebar.slider('Petal length', float(data.petal_length.min()), float(data.petal_length.max()), float(data.petal_length.mean()))
-    petal_width = st.sidebar.slider('Petal width', float(data.petal_width.min()), float(data.petal_width.max()), float(data.petal_width.mean()))
-    input_data = {'sepal_length': sepal_length,
-                  'sepal_width': sepal_width,
-                  'petal_length': petal_length,
-                  'petal_width': petal_width}
-    features = pd.DataFrame(input_data, index=[0])
+    st.sidebar.markdown("**Input your data below:**")
+    feature1 = st.sidebar.slider('Feature 1', 0.0, 100.0, 50.0)
+    feature2 = st.sidebar.slider('Feature 2', 0.0, 100.0, 50.0)
+    feature3 = st.sidebar.slider('Feature 3', 0.0, 100.0, 50.0)
+    data = {'Feature 1': feature1,
+            'Feature 2': feature2,
+            'Feature 3': feature3}
+    features = pd.DataFrame(data, index=[0])
     return features
 
 input_df = user_input_features()
 
-# Prediction
-st.subheader('User Input for Prediction')
+# Main panel
+st.subheader('User Input Features')
 st.write(input_df)
 
+# Create a sample dataset
+np.random.seed(42)
+X = np.random.rand(100, 3) * 100
+y = 3*X[:, 0] + 2*X[:, 1] + X[:, 2] + np.random.randn(100) * 10
+
+# Split the dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Define models
+models = {
+    "Linear Regression": LinearRegression(),
+    "Decision Tree": DecisionTreeRegressor(),
+    "Random Forest": RandomForestRegressor(n_estimators=100)
+}
+
+model_choice = st.sidebar.selectbox("Choose Model", list(models.keys()))
+model = models[model_choice]
+model.fit(X_train, y_train)
+
+# Predict using the model
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+# Display model metrics
+st.subheader(f'{model_choice} Metrics')
+st.write(f"Mean Squared Error: {mse:.2f}")
+st.write(f"R-squared: {r2:.2f}")
+
+# Predict on user input
 prediction = model.predict(input_df)
-st.write(f"The predicted species is: {prediction[0]}")
 
-# About
-st.sidebar.header("About")
-st.sidebar.text("Created by Yotam")
+st.subheader('Prediction')
+st.write(f"The predicted value is {prediction[0]:.2f}")
 
-# Add success, warning, info, and error messages
-st.success("The model ran successfully!")
-st.warning("This is a simple example.")
-st.info("You can add more features and data.")
-st.error("Make sure your input data is correct.")
+# Visualize the data
+st.subheader('Data Visualization')
+fig, ax = plt.subplots()
+sns.scatterplot(x=X[:, 0], y=y, ax=ax, label="Data")
+sns.lineplot(x=X_test[:, 0], y=y_pred, ax=ax, color="red", label="Prediction")
+plt.xlabel('Feature 1')
+plt.ylabel('Target')
+plt.title('Feature 1 vs Target')
+st.pyplot(fig)
 
-# Checkbox example
-if st.checkbox("Show raw data"):
-    st.subheader('Raw Data')
-    st.write(data)
-
+# Standard Normal Distribution
 st.sidebar.header("Distributions")
 
 # Choose distribution
@@ -216,3 +155,35 @@ elif distribution_choice == "Exponential":
         plt.ylabel('Frequency')
         plt.title(f'Exponential Distribution (lambda={lambda_exp})')
         st.pyplot(fig)
+
+# Add success, warning, info, and error messages
+st.success("The model ran successfully!")
+st.warning("This is a simple example.")
+st.info("You can add more features and data.")
+st.error("Make sure your input data is correct.")
+
+# Checkbox example
+if st.checkbox("Show raw data"):
+    st.subheader('Raw Data')
+    st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
+
+# Radio button example
+state = st.radio("What is your favorite Machine Learning model?", 
+                 ("Linear Regression", "Decision Tree", "Random Forest"))
+
+if state == 'Linear Regression':
+    st.success("Linear Regression is a great choice!")
+elif state == 'Decision Tree':
+    st.success("Decision Tree is a great choice!")
+else:
+    st.success("Random Forest is a great choice!")
+
+occupation = st.selectbox("What is your role?", ["Student", "Data Scientist", "Engineer"])
+st.text(f"Selected option is {occupation}")
+
+# Button example
+if st.button("Example Button"):
+    st.error("You clicked the button!")
+
+st.sidebar.header("About")
+st.sidebar.text("Created by Yotam")
