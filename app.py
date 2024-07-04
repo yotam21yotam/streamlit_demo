@@ -3,158 +3,133 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import roc_auc_score, confusion_matrix, precision_score, recall_score, roc_curve
 
 # Title of the app
-st.title("Interactive Machine Learning and Distribution App by Yotam")
+st.title("Iris Dataset Machine Learning App by Yotam")
 
-# Header
-st.header("Explore Different Models, Visualizations, and Distributions")
+# Load the Iris dataset
+@st.cache
+def load_data():
+    data = sns.load_dataset('iris')
+    return data
 
-# Sidebar input
-st.sidebar.header("User Input Features")
+data = load_data()
 
-def user_input_features():
-    st.sidebar.markdown("**Input your data below:**")
-    feature1 = st.sidebar.slider('Feature 1', 0.0, 100.0, 50.0)
-    feature2 = st.sidebar.slider('Feature 2', 0.0, 100.0, 50.0)
-    feature3 = st.sidebar.slider('Feature 3', 0.0, 100.0, 50.0)
-    data = {'Feature 1': feature1,
-            'Feature 2': feature2,
-            'Feature 3': feature3}
-    features = pd.DataFrame(data, index=[0])
-    return features
+# Display the dataset
+st.subheader("Iris Dataset")
+st.write(data.head())
 
-input_df = user_input_features()
+# Data wrangling
+st.subheader("Data Wrangling")
+st.write("Checking for missing values:")
+st.write(data.isnull().sum())
 
-# Main panel
-st.subheader('User Input Features')
-st.write(input_df)
+# Correlation analysis
+st.subheader("Correlation Analysis")
+numeric_data = data.select_dtypes(include=[np.number])  # Select only numeric columns
+corr = numeric_data.corr(method='pearson')
+st.write(corr)
 
-# Create a sample dataset
-np.random.seed(42)
-X = np.random.rand(100, 3) * 100
-y = 3*X[:, 0] + 2*X[:, 1] + X[:, 2] + np.random.randn(100) * 10
+# Correlation heatmap
+fig, ax = plt.subplots()
+sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
+plt.title('Correlation Heatmap')
+st.pyplot(fig)
 
-# Split the dataset
+# Splitting data
+X = data.drop(columns=['species'])
+y = data['species']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Define models
+# Sidebar for model selection
+st.sidebar.header("Model Selection")
+
 models = {
-    "Linear Regression": LinearRegression(),
-    "Decision Tree": DecisionTreeRegressor(),
-    "Random Forest": RandomForestRegressor(n_estimators=100)
+    "Logistic Regression": LogisticRegression(max_iter=200),
+    "Decision Tree": DecisionTreeClassifier(),
+    "Random Forest": RandomForestClassifier()
 }
 
 model_choice = st.sidebar.selectbox("Choose Model", list(models.keys()))
 model = models[model_choice]
+
+# Train the model
 model.fit(X_train, y_train)
 
-# Predict using the model
+# Predict and evaluate
 y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+y_prob = model.predict_proba(X_test) if hasattr(model, "predict_proba") else None
 
-# Display model metrics
-st.subheader(f'{model_choice} Metrics')
-st.write(f"Mean Squared Error: {mse:.2f}")
-st.write(f"R-squared: {r2:.2f}")
+# Evaluation metrics
+st.subheader(f'{model_choice} Evaluation Metrics')
 
-# Predict on user input
-prediction = model.predict(input_df)
+if y_prob is not None:
+    y_prob_multiclass = pd.get_dummies(y_test)
+    auc = roc_auc_score(y_prob_multiclass, y_prob, multi_class='ovr')
+    st.write(f"AUC: {auc:.2f}")
 
-st.subheader('Prediction')
-st.write(f"The predicted value is {prediction[0]:.2f}")
+cm = confusion_matrix(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average='macro')
+recall = recall_score(y_test, y_pred, average='macro')
 
-# Visualize the data
-st.subheader('Data Visualization')
+st.write(f"Precision: {precision:.2f}")
+st.write(f"Recall: {recall:.2f}")
+
+# Confusion matrix
 fig, ax = plt.subplots()
-sns.scatterplot(x=X[:, 0], y=y, ax=ax, label="Data")
-sns.lineplot(x=X_test[:, 0], y=y_pred, ax=ax, color="red", label="Prediction")
-plt.xlabel('Feature 1')
-plt.ylabel('Target')
-plt.title('Feature 1 vs Target')
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
 st.pyplot(fig)
 
-# Standard Normal Distribution
-st.sidebar.header("Distributions")
+# ROC Curve
+if y_prob is not None:
+    fpr = {}
+    tpr = {}
+    for i, label in enumerate(y_prob_multiclass.columns):
+        fpr[label], tpr[label], _ = roc_curve(y_prob_multiclass.iloc[:, i], y_prob[:, i])
+        plt.plot(fpr[label], tpr[label], label=f'ROC curve (area = {auc:.2f}) for label {label}')
+    
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve')
+    plt.legend(loc="lower right")
+    st.pyplot(plt)
 
-# Choose distribution
-distribution_choice = st.sidebar.selectbox(
-    "Choose Distribution",
-    ["Normal", "Bernoulli", "Binomial", "Poisson", "Exponential"]
-)
+# User input for prediction
+st.sidebar.header("User Input for Prediction")
 
-if distribution_choice == "Normal":
-    st.sidebar.subheader("Normal Distribution")
-    mean = st.sidebar.number_input("Mean", value=0.0)
-    std = st.sidebar.number_input("Standard Deviation", value=1.0)
-    size = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Normal Distribution"):
-        data = np.random.normal(mean, std, size)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=True, ax=ax)
-        plt.xlabel('Value')
-        plt.ylabel('Frequency')
-        plt.title(f'Normal Distribution (mean={mean}, std={std})')
-        st.pyplot(fig)
+def user_input_features():
+    sepal_length = st.sidebar.slider('Sepal length', float(data.sepal_length.min()), float(data.sepal_length.max()), float(data.sepal_length.mean()))
+    sepal_width = st.sidebar.slider('Sepal width', float(data.sepal_width.min()), float(data.sepal_width.max()), float(data.sepal_width.mean()))
+    petal_length = st.sidebar.slider('Petal length', float(data.petal_length.min()), float(data.petal_length.max()), float(data.petal_length.mean()))
+    petal_width = st.sidebar.slider('Petal width', float(data.petal_width.min()), float(data.petal_width.max()), float(data.petal_width.mean()))
+    input_data = {'sepal_length': sepal_length,
+                  'sepal_width': sepal_width,
+                  'petal_length': petal_length,
+                  'petal_width': petal_width}
+    features = pd.DataFrame(input_data, index=[0])
+    return features
 
-elif distribution_choice == "Bernoulli":
-    st.sidebar.subheader("Bernoulli Distribution")
-    p = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
-    n = st.sidebar.number_input("Number of Experiments", value=100, step=10)
-    if st.sidebar.button("Generate Bernoulli Distribution"):
-        data = np.random.binomial(1, p, n)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, discrete=True, ax=ax)
-        plt.xlabel('Outcome')
-        plt.ylabel('Frequency')
-        plt.title(f'Bernoulli Distribution (p={p}, n={n})')
-        st.pyplot(fig)
+input_df = user_input_features()
 
-elif distribution_choice == "Binomial":
-    st.sidebar.subheader("Binomial Distribution")
-    p_binom = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
-    n_binom = st.sidebar.number_input("Number of Trials", value=100, step=10)
-    size_binom = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Binomial Distribution"):
-        data = np.random.binomial(n_binom, p_binom, size_binom)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, ax=ax)
-        plt.xlabel('Number of Successes')
-        plt.ylabel('Frequency')
-        plt.title(f'Binomial Distribution (n={n_binom}, p={p_binom})')
-        st.pyplot(fig)
+# Prediction
+st.subheader('User Input for Prediction')
+st.write(input_df)
 
-elif distribution_choice == "Poisson":
-    st.sidebar.subheader("Poisson Distribution")
-    lambda_poisson = st.sidebar.number_input("Lambda", value=1.0)
-    size_poisson = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Poisson Distribution"):
-        data = np.random.poisson(lambda_poisson, size_poisson)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, ax=ax)
-        plt.xlabel('Number of Events')
-        plt.ylabel('Frequency')
-        plt.title(f'Poisson Distribution (lambda={lambda_poisson})')
-        st.pyplot(fig)
+prediction = model.predict(input_df)
+st.write(f"The predicted species is: {prediction[0]}")
 
-elif distribution_choice == "Exponential":
-    st.sidebar.subheader("Exponential Distribution")
-    lambda_exp = st.sidebar.number_input("Rate (lambda)", value=1.0)
-    size_exp = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Exponential Distribution"):
-        data = np.random.exponential(1/lambda_exp, size_exp)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=True, ax=ax)
-        plt.xlabel('Value')
-        plt.ylabel('Frequency')
-        plt.title(f'Exponential Distribution (lambda={lambda_exp})')
-        st.pyplot(fig)
+# About
+st.sidebar.header("About")
+st.sidebar.text("Created by Yotam")
 
 # Add success, warning, info, and error messages
 st.success("The model ran successfully!")
@@ -165,20 +140,11 @@ st.error("Make sure your input data is correct.")
 # Checkbox example
 if st.checkbox("Show raw data"):
     st.subheader('Raw Data')
-    st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
+    st.write(data)
 
-# Radio button example
-state = st.radio("What is your favorite Machine Learning model?", 
-                 ("Linear Regression", "Decision Tree", "Random Forest"))
+st.sidebar.header("Distributions")
 
-if state == 'Linear Regression':
-    st.success("Linear Regression is a great choice!")
-elif state == 'Decision Tree':
-    st.success("Decision Tree is a great choice!")
-else:
-    st.success("Random Forest is a great choice!")
-
-
-
-st.sidebar.header("About")
-st.sidebar.text("Created by Yotam")
+# Choose distribution
+distribution_choice = st.sidebar.selectbox(
+    "Choose Distribution",
+    ["Normal", "Ber
