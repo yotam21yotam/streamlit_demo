@@ -6,7 +6,7 @@ qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-dist
 
 # Personal context about you
 context = """
-I am Yotam, a data scientist and machine learning engineer with expertise in cybersecurity. 
+I am Yotam, i am 36 years old, a data scientist and machine learning engineer with expertise in cybersecurity. 
 I graduated with an M.Sc in Computer Science, specializing in Intelligent Systems. I have worked 
 on various projects, including the development of sophisticated algorithms for predictive analytics 
 and real-time data processing systems. In my free time, I enjoy hiking, photography, and working on 
