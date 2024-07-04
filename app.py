@@ -110,6 +110,48 @@ if st.sidebar.button("Generate Bernoulli Distribution"):
     plt.title(f'Bernoulli Distribution (p={p}, n={n})')
     st.pyplot(fig)
 
+# Additional Distributions
+
+# Binomial Distribution
+st.sidebar.subheader("Binomial Distribution")
+p_binom = st.sidebar.number_input("Binomial Probability of Success", min_value=0.0, max_value=1.0, value=0.5, key="p_binom")
+n_binom = st.sidebar.number_input("Number of Trials", value=100, step=10, key="n_binom")
+size_binom = st.sidebar.number_input("Number of Samples", value=1000, step=100, key="size_binom")
+if st.sidebar.button("Generate Binomial Distribution"):
+    data = np.random.binomial(n_binom, p_binom, size_binom)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=False, ax=ax)
+    plt.xlabel('Number of Successes')
+    plt.ylabel('Frequency')
+    plt.title(f'Binomial Distribution (n={n_binom}, p={p_binom})')
+    st.pyplot(fig)
+
+# Poisson Distribution
+st.sidebar.subheader("Poisson Distribution")
+lambda_poisson = st.sidebar.number_input("Lambda", value=1.0, key="lambda_poisson")
+size_poisson = st.sidebar.number_input("Number of Samples", value=1000, step=100, key="size_poisson")
+if st.sidebar.button("Generate Poisson Distribution"):
+    data = np.random.poisson(lambda_poisson, size_poisson)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=False, ax=ax)
+    plt.xlabel('Number of Events')
+    plt.ylabel('Frequency')
+    plt.title(f'Poisson Distribution (lambda={lambda_poisson})')
+    st.pyplot(fig)
+
+# Exponential Distribution
+st.sidebar.subheader("Exponential Distribution")
+lambda_exp = st.sidebar.number_input("Rate (lambda)", value=1.0, key="lambda_exp")
+size_exp = st.sidebar.number_input("Number of Samples", value=1000, step=100, key="size_exp")
+if st.sidebar.button("Generate Exponential Distribution"):
+    data = np.random.exponential(1/lambda_exp, size_exp)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=True, ax=ax)
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title(f'Exponential Distribution (lambda={lambda_exp})')
+    st.pyplot(fig)
+
 # Add success, warning, info, and error messages
 st.success("The model ran successfully!")
 st.warning("This is a simple example.")
@@ -140,4 +182,4 @@ if st.button("Example Button"):
     st.error("You clicked the button!")
 
 st.sidebar.header("About")
-st.sidebar.text("Created by Yotam")
+st.sidebar.text
