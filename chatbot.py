@@ -64,7 +64,7 @@ Python, R, C, SQL, MLflow, Airflow, TensorFlow, Keras, Pandas, scikit-learn, Gen
 Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Joblib.
 """
 
-st.title('Yotam's Chatbot')
+st.title('Yotams Chatbot')
 
 st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything you would like to know about Yotam:')
 
