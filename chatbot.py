@@ -1,12 +1,16 @@
 import streamlit as st
 from transformers import pipeline
 
-# Load the question-answering model
-qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
+# List of available models
+model_options = {
+    "DistilBERT (default)": "distilbert-base-uncased-distilled-squad",
+    "BERT": "bert-large-uncased-whole-word-masking-finetuned-squad",
+    "ALBERT": "albert-base-v2"
+}
 
-# Personal context about you
+# Personal context about Yotam
 context = """
-I am Yotam, a Data Scientist and & ML Engineer with a robust background in Statistics, Machine Learning engineering, 
+I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
 My diverse experience has equipped me with a unique blend of skills, making me a quick learner and 
@@ -37,9 +41,9 @@ From 2020 to 2021:
 - Position: Data Scientist
 - Organization: Nogamy, Tel Aviv
 - Projects:
-  BioRad - Developed and deployed ML driven projects for predictive maintenance and fault prediction 
+  BioRad - Developed and deployed ML-driven projects for predictive maintenance and fault prediction 
   on biological equipment, reducing equipment malfunctions by over 80% using Python and SQL.
-  InTelos - Developed and deployed ML driven projects for BI and fraud detection, leveraging network 
+  InTelos - Developed and deployed ML-driven projects for BI and fraud detection, leveraging network 
   data using Python and SQL.
   Golan Telecom - Conducted R&D on ETL processes to reduce time and space complexities, achieving over 
   a 20% reduction in running time using Python and SQL.
@@ -48,7 +52,7 @@ From 2019 to 2020:
 - Position: Data Scientist
 - Organization: eLoomina, Tel Aviv
 - Achievements: Designed and developed statistical models predicting human behavior based on large 
-  datasets using R, Python, and SQL. Successfully Implemented ML models that increased the accuracy 
+  datasets using R, Python, and SQL. Successfully implemented ML models that increased the accuracy 
   of behavioral predictions. Engineered and refined data architectures that supported complex data 
   operations, significantly reducing latency.
 
@@ -58,21 +62,23 @@ Spark, Splunk, Docker, Linux, GIT, Kubernetes, Grafana, MongoDB, Kafka, Jenkins,
 Zeek, Suricata, Wireshark, tshark, Nmap, TCP/IP, OSI model, AWS, Azure, Snowflake, Databricks, S3, 
 Python, R, C, SQL, MLflow, Airflow, TensorFlow, Keras, Pandas, scikit-learn, Gensim, Matplotlib, 
 Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Joblib.
-
-
 """
 
 st.title('About Me Chatbot')
 
 st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything based on the provided information.')
 
+# Model selection in sidebar
+model_choice = st.sidebar.selectbox("Choose a model for answering:", list(model_options.keys()))
+model_path = model_options[model_choice]
+
+# Load the selected question-answering model
+qa_pipeline = pipeline("question-answering", model=model_path)
+
 user_input = st.text_input("Type your question here:")
 
 if user_input:
-    # Generate response using the model
-    response = qa_pipeline({
-        'question': user_input,
-        'context': context
-    })
+    # Generate response using the selected model
+    response = qa_pipeline({'question': user_input, 'context': context})
     answer = response['answer']
     st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
