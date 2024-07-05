@@ -66,7 +66,7 @@ Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Job
 
 st.title('Yotams Chatbot')
 
-st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything you would like to know about Yotam:')
+st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything you would like to know about him:')
 
 # Model selection in sidebar
 model_choice = st.sidebar.selectbox("Choose a model for answering:", list(model_options.keys()))
