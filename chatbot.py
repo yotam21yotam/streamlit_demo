@@ -1,10 +1,14 @@
 import streamlit as st
-from transformers import pipeline, set_seed
+from transformers import pipeline
 
-# Set a seed for reproducibility
-set_seed(42)
+# List of available models
+model_options = {
+    "DistilBERT (default)": "distilbert-base-uncased-distilled-squad",
+    "BERT": "bert-large-uncased-whole-word-masking-finetuned-squad",
+    "ALBERT": "albert-base-v2"
+}
 
-# Personal and professional context about Yotam
+# Personal context about Yotam
 context = """
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
@@ -61,35 +65,20 @@ Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Job
 """
 
 st.title('About Me Chatbot')
+
 st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything based on the provided information.')
 
-# List of available models
-model_options = {
-    "DistilBERT": "distilbert-base-uncased-distilled-squad",
-    "GPT-Neo": "EleutherAI/gpt-neo-2.7B",
-    "GPT-J": "EleutherAI/gpt-j-6B"
-}
-
-# Model selection in the sidebar
+# Model selection in sidebar
 model_choice = st.sidebar.selectbox("Choose a model for answering:", list(model_options.keys()))
+model_path = model_options[model_choice]
 
 # Load the selected question-answering model
-if model_choice in ["GPT-Neo", "GPT-J"]:
-    generator = pipeline('text-generation', model=model_options[model_choice])
-else:
-    qa_pipeline = pipeline("question-answering", model=model_options[model_choice])
+qa_pipeline = pipeline("question-answering", model=model_path)
 
 user_input = st.text_input("Type your question here:")
 
 if user_input:
-    if model_choice in ["GPT-Neo", "GPT-J"]:
-        # For text generation models, we frame the question differently
-        prompt = f"Answer the following question based on the provided context:\nContext: {context}\nQuestion: {user_input}\nAnswer:"
-        response = generator(prompt, max_length=150, num_return_sequences=1)
-        answer = response[0]['generated_text']
-    else:
-        # For question answering models, we use the standard QA pipeline
-        response = qa_pipeline({'question': user_input, 'context': context})
-        answer = response['answer']
-    
+    # Generate response using the selected model
+    response = qa_pipeline({'question': user_input, 'context': context})
+    answer = response['answer']
     st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
