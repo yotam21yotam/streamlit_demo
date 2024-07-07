@@ -1,12 +1,8 @@
 import streamlit as st
 from transformers import pipeline
 
-# List of available models
-model_options = {
-    "DistilBERT (default)": "distilbert-base-uncased-distilled-squad",
-    "BERT": "bert-large-uncased-whole-word-masking-finetuned-squad",
-    "ALBERT": "albert-base-v2"
-}
+# Use only one model to save memory
+model_path = "distilbert-base-uncased-distilled-squad"
 
 # Personal context about Yotam
 context = """
@@ -64,21 +60,17 @@ Python, R, C, SQL, MLflow, Airflow, TensorFlow, Keras, Pandas, scikit-learn, Gen
 Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Joblib.
 """
 
-st.title('Yotams Chatbot')
+st.title('Yotam\'s Chatbot')
 
 st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything you would like to know about him:')
 
-# Model selection in sidebar
-model_choice = st.sidebar.selectbox("Choose a model for answering:", list(model_options.keys()))
-model_path = model_options[model_choice]
-
-# Load the selected question-answering model
+# Load the question-answering model
 qa_pipeline = pipeline("question-answering", model=model_path)
 
 user_input = st.text_input("Type your question here:")
 
 if user_input:
-    # Generate response using the selected model
+    # Generate response using the model
     response = qa_pipeline({'question': user_input, 'context': context})
     answer = response['answer']
     st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
