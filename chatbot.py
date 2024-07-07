@@ -6,6 +6,7 @@ model_path = "distilbert-base-uncased-distilled-squad"
 
 # Personal context about Yotam
 context = """
+X610 is groop of little girls that do not like to ride bicycles and only talking shit
 Yoav Shechter has been with 20,000 girls just this weekend
 Yoav can not ride bicycle, only with supporting wheels
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
