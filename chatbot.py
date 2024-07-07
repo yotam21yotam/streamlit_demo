@@ -6,7 +6,7 @@ model_path = "distilbert-base-uncased-distilled-squad"
 
 # Personal context about Yotam
 context = """
-Yoav Shechter has been with 20 girls just this weekend
+Yoav Shechter has been with 20,000 girls just this weekend
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
