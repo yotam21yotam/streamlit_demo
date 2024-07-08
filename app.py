@@ -174,40 +174,45 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
     st.sidebar.subheader("Kernel Operation")
-    kernel_size = st.sidebar.slider("Kernel Size", 1, 5, 3)
-    kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Max"])
+    kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Gaussian", "Sharpen", "Edge Detection", "Emboss"])
     
     st.sidebar.subheader("Pooling Operation")
     pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
-    pooling_size = st.sidebar.slider("Pooling Size", 2, 5, 2)
+    pooling_size = st.sidebar.slider("Pooling Size", 2, 10, 2)
     
     # Apply kernel operation
-    def apply_kernel(image, kernel_size, operation):
+    def apply_kernel(image, operation):
         if operation == "Average":
-            kernel = np.ones((kernel_size, kernel_size), np.float32) / (kernel_size * kernel_size)
-            return cv2.filter2D(image, -1, kernel)
-        elif operation == "Max":
-            return cv2.dilate(image, np.ones((kernel_size, kernel_size), np.uint8))
+            kernel = np.ones((5, 5), np.float32) / 25
+        elif operation == "Gaussian":
+            kernel = cv2.getGaussianKernel(5, 0)
+            kernel = np.outer(kernel, kernel)
+        elif operation == "Sharpen":
+            kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+        elif operation == "Edge Detection":
+            kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        elif operation == "Emboss":
+            kernel = np.array([[-2, -1, 0], [-1, 1, 1], [0, 1, 2]])
+        return cv2.filter2D(image, -1, kernel)
     
     # Apply pooling operation
     def apply_pooling(image, pooling_size, operation):
         if operation == "Average Pooling":
-            return cv2.resize(image, (image.shape[1]//pooling_size, image.shape[0]//pooling_size))
+            return cv2.resize(cv2.blur(image, (pooling_size, pooling_size)), (image.shape[1], image.shape[0]))
         elif operation == "Max Pooling":
             pooled = np.zeros((image.shape[0]//pooling_size, image.shape[1]//pooling_size, image.shape[2]), dtype=np.uint8)
             for i in range(0, image.shape[0], pooling_size):
                 for j in range(0, image.shape[1], pooling_size):
                     pooled[i//pooling_size, j//pooling_size] = np.max(image[i:i+pooling_size, j:j+pooling_size], axis=(0,1))
-            return pooled
+            return cv2.resize(pooled, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
     
     # Convert image to BGR format for OpenCV
     image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     
     # Apply kernel operation
-    processed_image = apply_kernel(image_bgr, kernel_size, kernel_option)
+    processed_image = apply_kernel(image_bgr, kernel_option)
     st.image(cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB), caption=f'Image after {kernel_option} Kernel Operation', use_column_width=True)
     
     # Apply pooling operation
     pooled_image = apply_pooling(processed_image, pooling_size, pooling_option)
-    pooled_image = cv2.resize(pooled_image, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)  # Resize back to original for display
     st.image(cv2.cvtColor(pooled_image, cv2.COLOR_BGR2RGB), caption=f'Image after {pooling_option}', use_column_width=True)
