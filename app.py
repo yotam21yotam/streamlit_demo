@@ -1,6 +1,5 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
+import pandas as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
@@ -134,7 +133,7 @@ elif model_choice == "Random Forest":
 st.subheader("Clustering")
 
 # Generate sample points for clustering
-X_cluster = np.vstack((X_train, y_train)).T
+X_cluster = np.column_stack((X, y))
 
 n_clusters = st.sidebar.slider("Number of Clusters", 1, 10, 3)
 kmeans = KMeans(n_clusters=n_clusters, random_state=42)
