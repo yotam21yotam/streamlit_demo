@@ -3,10 +3,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Title of the app
@@ -46,14 +46,27 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Define models
 models = {
     "Linear Regression": LinearRegression(),
-    "Ridge Regression": Ridge(alpha=1.0),
-    "Lasso Regression": Lasso(alpha=0.1),
     "Decision Tree": DecisionTreeRegressor(),
-    "Random Forest": RandomForestRegressor(n_estimators=100)
+    "Random Forest": RandomForestRegressor()
 }
 
 model_choice = st.sidebar.selectbox("Choose Model", list(models.keys()))
 model = models[model_choice]
+
+# Hyperparameters for Decision Tree
+if model_choice == "Decision Tree":
+    max_depth = st.sidebar.slider("Max Depth", 1, 20, 5)
+    min_samples_split = st.sidebar.slider("Min Samples Split", 2, 20, 2)
+    model.set_params(max_depth=max_depth, min_samples_split=min_samples_split)
+
+# Hyperparameters for Random Forest
+if model_choice == "Random Forest":
+    n_estimators = st.sidebar.slider("Number of Estimators", 10, 200, 100, step=10)
+    max_depth = st.sidebar.slider("Max Depth", 1, 20, 5)
+    min_samples_split = st.sidebar.slider("Min Samples Split", 2, 20, 2)
+    model.set_params(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split)
+
+# Fit the model
 model.fit(X_train, y_train)
 
 # Predict using the model
@@ -81,6 +94,40 @@ plt.xlabel('Feature 1')
 plt.ylabel('Target')
 plt.title('Feature 1 vs Target')
 st.pyplot(fig)
+
+# Bias-Variance Trade-off Demonstration
+st.subheader("Bias-Variance Trade-off")
+
+# Function to calculate and plot bias-variance trade-off
+def plot_bias_variance_tradeoff(model, X, y, param_name, param_range):
+    train_scores, test_scores = [], []
+    for param in param_range:
+        model.set_params(**{param_name: param})
+        train_score = cross_val_score(model, X, y, cv=5, scoring='neg_mean_squared_error').mean()
+        test_score = cross_val_score(model, X, y, cv=5, scoring='neg_mean_squared_error').mean()
+        train_scores.append(-train_score)
+        test_scores.append(-test_score)
+    
+    fig, ax = plt.subplots()
+    ax.plot(param_range, train_scores, label="Training Error")
+    ax.plot(param_range, test_scores, label="Testing Error")
+    ax.set_xlabel(param_name)
+    ax.set_ylabel("Mean Squared Error")
+    ax.set_title(f"Bias-Variance Trade-off ({param_name})")
+    ax.legend()
+    st.pyplot(fig)
+
+# Bias-Variance Trade-off for Decision Tree
+if model_choice == "Decision Tree":
+    param_name = "max_depth"
+    param_range = range(1, 21)
+    plot_bias_variance_tradeoff(model, X, y, param_name, param_range)
+
+# Bias-Variance Trade-off for Random Forest
+if model_choice == "Random Forest":
+    param_name = "n_estimators"
+    param_range = range(10, 201, 10)
+    plot_bias_variance_tradeoff(model, X, y, param_name, param_range)
 
 # Standard Normal Distribution
 st.sidebar.header("Distributions")
@@ -156,7 +203,4 @@ elif distribution_choice == "Exponential":
 # Add a checkbox for raw data display
 if st.checkbox("Show raw data"):
     st.subheader('Raw Data')
-    st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
-
-st.sidebar.header("About")
-st.sidebar.text("Created by Yotam")
+   
