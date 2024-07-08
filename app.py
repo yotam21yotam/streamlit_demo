@@ -94,98 +94,67 @@ if distribution_choice == "Normal":
     mean = st.sidebar.number_input("Mean", value=0.0)
     std = st.sidebar.number_input("Standard Deviation", value=1.0)
     size = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Normal Distribution"):
-        data = np.random.normal(mean, std, size)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=True, ax=ax)
-        plt.xlabel('Value')
-        plt.ylabel('Frequency')
-        plt.title(f'Normal Distribution (mean={mean}, std={std})')
-        st.pyplot(fig)
+    data = np.random.normal(mean, std, size)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=True, ax=ax)
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title(f'Normal Distribution (mean={mean}, std={std})')
+    st.pyplot(fig)
 
 elif distribution_choice == "Bernoulli":
     st.sidebar.subheader("Bernoulli Distribution")
     p = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
     n = st.sidebar.number_input("Number of Experiments", value=100, step=10)
-    if st.sidebar.button("Generate Bernoulli Distribution"):
-        data = np.random.binomial(1, p, n)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, discrete=True, ax=ax)
-        plt.xlabel('Outcome')
-        plt.ylabel('Frequency')
-        plt.title(f'Bernoulli Distribution (p={p}, n={n})')
-        st.pyplot(fig)
+    data = np.random.binomial(1, p, n)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=False, discrete=True, ax=ax)
+    plt.xlabel('Outcome')
+    plt.ylabel('Frequency')
+    plt.title(f'Bernoulli Distribution (p={p}, n={n})')
+    st.pyplot(fig)
 
 elif distribution_choice == "Binomial":
     st.sidebar.subheader("Binomial Distribution")
     p_binom = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
     n_binom = st.sidebar.number_input("Number of Trials", value=100, step=10)
     size_binom = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Binomial Distribution"):
-        data = np.random.binomial(n_binom, p_binom, size_binom)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, ax=ax)
-        plt.xlabel('Number of Successes')
-        plt.ylabel('Frequency')
-        plt.title(f'Binomial Distribution (n={n_binom}, p={p_binom})')
-        st.pyplot(fig)
+    data = np.random.binomial(n_binom, p_binom, size_binom)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=False, ax=ax)
+    plt.xlabel('Number of Successes')
+    plt.ylabel('Frequency')
+    plt.title(f'Binomial Distribution (n={n_binom}, p={p_binom})')
+    st.pyplot(fig)
 
 elif distribution_choice == "Poisson":
     st.sidebar.subheader("Poisson Distribution")
     lambda_poisson = st.sidebar.number_input("Lambda", value=1.0)
     size_poisson = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Poisson Distribution"):
-        data = np.random.poisson(lambda_poisson, size_poisson)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=False, ax=ax)
-        plt.xlabel('Number of Events')
-        plt.ylabel('Frequency')
-        plt.title(f'Poisson Distribution (lambda={lambda_poisson})')
-        st.pyplot(fig)
+    data = np.random.poisson(lambda_poisson, size_poisson)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=False, ax=ax)
+    plt.xlabel('Number of Events')
+    plt.ylabel('Frequency')
+    plt.title(f'Poisson Distribution (lambda={lambda_poisson})')
+    st.pyplot(fig)
 
 elif distribution_choice == "Exponential":
     st.sidebar.subheader("Exponential Distribution")
     lambda_exp = st.sidebar.number_input("Rate (lambda)", value=1.0)
     size_exp = st.sidebar.number_input("Number of Samples", value=1000, step=100)
-    if st.sidebar.button("Generate Exponential Distribution"):
-        data = np.random.exponential(1/lambda_exp, size_exp)
-        fig, ax = plt.subplots()
-        sns.histplot(data, kde=True, ax=ax)
-        plt.xlabel('Value')
-        plt.ylabel('Frequency')
-        plt.title(f'Exponential Distribution (lambda={lambda_exp})')
-        st.pyplot(fig)
+    data = np.random.exponential(1/lambda_exp, size_exp)
+    fig, ax = plt.subplots()
+    sns.histplot(data, kde=True, ax=ax)
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title(f'Exponential Distribution (lambda={lambda_exp})')
+    st.pyplot(fig)
 
-# Add success, warning, info, and error messages
-st.success("The model ran successfully!")
-st.warning("This is a simple example.")
-st.info("You can add more features and data.")
-st.error("Make sure your input data is correct.")
-
-# Checkbox example
+# Add a checkbox for raw data display
 if st.checkbox("Show raw data"):
     st.subheader('Raw Data')
     st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
 
-# Radio button example
-state = st.radio("What is your favorite Machine Learning model?", 
-                 ("Linear Regression", "Decision Tree", "Random Forest"))
-
-if state == 'Linear Regression':
-    st.success("Linear Regression is a great choice!")
-elif state == 'Decision Tree':
-    st.success("Decision Tree is a great choice!")
-else:
-    st.success("Random Forest is a great choice!")
-
-occupation = st.selectbox("What is your role?", ["Student", "Data Scientist", "Engineer"])
-st.text(f"Selected option is {occupation}")
-
-# Button example
-if st.button("Example Button"):
-    st.error("You clicked the button!")
-
 st.sidebar.header("About")
 st.sidebar.text("Created by Yotam")
-
-
