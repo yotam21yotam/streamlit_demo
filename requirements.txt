@@ -9,5 +9,4 @@ torch
 opencv-python
 scikit-image
 opencv-python-headless
-tensorflow
 tensorflow==2.11.0
