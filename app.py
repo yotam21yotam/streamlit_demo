@@ -174,7 +174,7 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
     st.sidebar.subheader("Kernel Operation")
-    kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Gaussian", "Sharpen", "Edge Detection", "Emboss"])
+    kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Gaussian", "Sharpen", "Edge Detection", "Emboss", "Laplacian"])
     
     st.sidebar.subheader("Pooling Operation")
     pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
@@ -193,6 +193,8 @@ if uploaded_file is not None:
             kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
         elif operation == "Emboss":
             kernel = np.array([[-2, -1, 0], [-1, 1, 1], [0, 1, 2]])
+        elif operation == "Laplacian":
+            kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]])
         return cv2.filter2D(image, -1, kernel)
     
     # Apply pooling operation
@@ -216,3 +218,4 @@ if uploaded_file is not None:
     # Apply pooling operation
     pooled_image = apply_pooling(processed_image, pooling_size, pooling_option)
     st.image(cv2.cvtColor(pooled_image, cv2.COLOR_BGR2RGB), caption=f'Image after {pooling_option}', use_column_width=True)
+
