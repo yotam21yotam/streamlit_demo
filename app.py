@@ -6,96 +6,103 @@ import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.cluster import KMeans
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
 
 # Title of the app
-st.title("Bias-Variance Trade-off Demonstration")
+st.title("Interactive Machine Learning App")
 
-# Sidebar input
-st.sidebar.header("User Input Features")
+# Sidebar for data generation
+st.sidebar.header("Generate Data")
 
-def user_input_features():
-    st.sidebar.markdown("**Input your data below:**")
-    feature1 = st.sidebar.slider('Feature 1', 0.0, 100.0, 50.0)
-    feature2 = st.sidebar.slider('Feature 2', 0.0, 100.0, 50.0)
-    feature3 = st.sidebar.slider('Feature 3', 0.0, 100.0, 50.0)
-    data = {'Feature 1': feature1,
-            'Feature 2': feature2,
-            'Feature 3': feature3}
-    features = pd.DataFrame(data, index=[0])
-    return features
+distribution_choice = st.sidebar.selectbox(
+    "Choose Distribution",
+    ["Normal", "Bernoulli", "Binomial", "Poisson", "Exponential"]
+)
 
-input_df = user_input_features()
+if distribution_choice == "Normal":
+    mean = st.sidebar.number_input("Mean", value=0.0)
+    std = st.sidebar.number_input("Standard Deviation", value=1.0)
+    size = st.sidebar.number_input("Number of Samples", value=100, step=10)
+    data = np.random.normal(mean, std, size)
+elif distribution_choice == "Bernoulli":
+    p = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
+    size = st.sidebar.number_input("Number of Samples", value=100, step=10)
+    data = np.random.binomial(1, p, size)
+elif distribution_choice == "Binomial":
+    p_binom = st.sidebar.number_input("Probability of Success", min_value=0.0, max_value=1.0, value=0.5)
+    n_binom = st.sidebar.number_input("Number of Trials", value=10, step=1)
+    size = st.sidebar.number_input("Number of Samples", value=100, step=10)
+    data = np.random.binomial(n_binom, p_binom, size)
+elif distribution_choice == "Poisson":
+    lambda_poisson = st.sidebar.number_input("Lambda", value=1.0)
+    size = st.sidebar.number_input("Number of Samples", value=100, step=10)
+    data = np.random.poisson(lambda_poisson, size)
+elif distribution_choice == "Exponential":
+    lambda_exp = st.sidebar.number_input("Rate (lambda)", value=1.0)
+    size = st.sidebar.number_input("Number of Samples", value=100, step=10)
+    data = np.random.exponential(1/lambda_exp, size)
 
-# Main panel
-st.subheader('User Input Features')
-st.write(input_df)
+# Plot the distribution
+st.subheader(f'{distribution_choice} Distribution')
+fig, ax = plt.subplots()
+sns.histplot(data, kde=True, ax=ax)
+plt.xlabel('Value')
+plt.ylabel('Frequency')
+st.pyplot(fig)
 
-# Create a sample dataset
-np.random.seed(42)
-X = np.random.rand(100, 3) * 100
-y = 3 * X[:, 0] + 2 * X[:, 1] + X[:, 2] + np.random.randn(100) * 10
+# Show sample data
+st.subheader('Sample Data')
+st.write(pd.DataFrame(data, columns=['Sample Data']))
 
-# Split the dataset
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Generate sample points for regression and clustering
+X = np.linspace(0, 100, size)
+y = 3 * X + np.random.randn(size) * 10  # Linear relationship with noise
 
-# Define models
-models = {
-    "Linear Regression": LinearRegression(),
-    "Decision Tree": DecisionTreeRegressor(),
-    "Random Forest": RandomForestRegressor()
-}
+# Split the dataset for regression
+X_train, X_test, y_train, y_test = train_test_split(X.reshape(-1, 1), y, test_size=0.2, random_state=42)
 
-model_choice = st.sidebar.selectbox("Choose Model", list(models.keys()))
-model = models[model_choice]
+# Sidebar for model selection and hyperparameters
+st.sidebar.header("Choose Model for Regression")
 
-# Hyperparameters for Decision Tree
+model_choice = st.sidebar.selectbox("Choose Model", ["Linear Regression", "Decision Tree", "Random Forest"])
+
 if model_choice == "Decision Tree":
     max_depth = st.sidebar.slider("Max Depth", 1, 20, 5)
     min_samples_split = st.sidebar.slider("Min Samples Split", 2, 20, 2)
-    model.set_params(max_depth=max_depth, min_samples_split=min_samples_split)
-
-# Hyperparameters for Random Forest
-if model_choice == "Random Forest":
+    model = DecisionTreeRegressor(max_depth=max_depth, min_samples_split=min_samples_split)
+elif model_choice == "Random Forest":
     n_estimators = st.sidebar.slider("Number of Estimators", 10, 200, 100, step=10)
     max_depth = st.sidebar.slider("Max Depth", 1, 20, 5)
     min_samples_split = st.sidebar.slider("Min Samples Split", 2, 20, 2)
-    model.set_params(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split)
+    model = RandomForestRegressor(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split)
+else:
+    model = LinearRegression()
 
 # Fit the model
 model.fit(X_train, y_train)
-
-# Predict using the model
 y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
+
+# Plot regression line
+st.subheader('Regression Line')
+fig, ax = plt.subplots()
+sns.scatterplot(x=X_test.flatten(), y=y_test, ax=ax, label="Test Data")
+sns.lineplot(x=X_test.flatten(), y=y_pred, ax=ax, color="red", label="Prediction")
+plt.xlabel('X')
+plt.ylabel('y')
+st.pyplot(fig)
 
 # Display model metrics
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
 st.subheader(f'{model_choice} Metrics')
 st.write(f"Mean Squared Error: {mse:.2f}")
 st.write(f"R-squared: {r2:.2f}")
 
-# Predict on user input
-prediction = model.predict(input_df)
-
-st.subheader('Prediction')
-st.write(f"The predicted value is {prediction[0]:.2f}")
-
-# Visualize the data
-st.subheader('Data Visualization')
-fig, ax = plt.subplots()
-sns.scatterplot(x=X[:, 0], y=y, ax=ax, label="Data")
-sns.lineplot(x=X_test[:, 0], y=y_pred, ax=ax, color="red", label="Prediction")
-plt.xlabel('Feature 1')
-plt.ylabel('Target')
-plt.title('Feature 1 vs Target')
-st.pyplot(fig)
-
-# Bias-Variance Trade-off Demonstration
+# Bias-Variance Trade-off
 st.subheader("Bias-Variance Trade-off")
 
-# Function to calculate and plot bias-variance trade-off
 def plot_bias_variance_tradeoff(model, X, y, param_name, param_range):
     train_scores, test_scores = [], []
     for param in param_range:
@@ -114,19 +121,37 @@ def plot_bias_variance_tradeoff(model, X, y, param_name, param_range):
     ax.legend()
     st.pyplot(fig)
 
-# Bias-Variance Trade-off for Decision Tree
 if model_choice == "Decision Tree":
     param_name = "max_depth"
     param_range = range(1, 21)
-    plot_bias_variance_tradeoff(model, X, y, param_name, param_range)
-
-# Bias-Variance Trade-off for Random Forest
-if model_choice == "Random Forest":
+    plot_bias_variance_tradeoff(model, X_train, y_train, param_name, param_range)
+elif model_choice == "Random Forest":
     param_name = "n_estimators"
     param_range = range(10, 201, 10)
-    plot_bias_variance_tradeoff(model, X, y, param_name, param_range)
+    plot_bias_variance_tradeoff(model, X_train, y_train, param_name, param_range)
+
+# Unsupervised learning: Clustering
+st.subheader("Clustering")
+
+# Generate sample points for clustering
+X_cluster = np.vstack((X_train, y_train)).T
+
+n_clusters = st.sidebar.slider("Number of Clusters", 1, 10, 3)
+kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+kmeans.fit(X_cluster)
+labels = kmeans.labels_
+
+# Plot clustering
+fig, ax = plt.subplots()
+scatter = ax.scatter(X_cluster[:, 0], X_cluster[:, 1], c=labels, cmap='viridis')
+legend1 = ax.legend(*scatter.legend_elements(), title="Clusters")
+ax.add_artist(legend1)
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('Clustering Visualization')
+st.pyplot(fig)
 
 # Add a checkbox for raw data display
 if st.checkbox("Show raw data"):
     st.subheader('Raw Data')
-    st.write(pd.DataFrame(X, columns=['Feature 1', 'Feature 2', 'Feature 3']))
+    st.write(pd.DataFrame(X_cluster, columns=['Feature 1', 'Feature 2']))
