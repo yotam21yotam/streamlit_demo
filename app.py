@@ -159,9 +159,11 @@ if st.checkbox("Show raw data"):
 
 
 
-import cv2
+import tensorflow as tf
+import numpy as np
+import streamlit as st
 from skimage import io
-from skimage.transform import resize
+import matplotlib.pyplot as plt
 
 # Image Processing Section
 st.sidebar.header("Image Processing")
@@ -173,29 +175,36 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
     st.sidebar.subheader("Kernel Operation")
+    kernel_size = st.sidebar.slider("Kernel Size", 1, 5, 3)
     kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Max"])
-
+    
     st.sidebar.subheader("Pooling Operation")
     pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
+    pooling_size = st.sidebar.slider("Pooling Size", 2, 5, 2)
+    
+    # Convert image to tensor
+    image_tensor = tf.convert_to_tensor(image, dtype=tf.float32)
+    image_tensor = tf.expand_dims(image_tensor, axis=0)
+    
+    # Define kernel
+    if kernel_option == "Average":
+        kernel = tf.ones((kernel_size, kernel_size, image.shape[-1], 1)) / (kernel_size * kernel_size)
+    elif kernel_option == "Max":
+        kernel = tf.ones((kernel_size, kernel_size, image.shape[-1], 1))
+    
+    # Apply kernel operation
+    conv_layer = tf.nn.conv2d(image_tensor, kernel, strides=[1, 1, 1, 1], padding='SAME')
+    
+    # Apply pooling operation
+    if pooling_option == "Average Pooling":
+        pooled_layer = tf.nn.avg_pool2d(conv_layer, ksize=[1, pooling_size, pooling_size, 1], strides=[1, pooling_size, pooling_size, 1], padding='SAME')
+    elif pooling_option == "Max Pooling":
+        pooled_layer = tf.nn.max_pool2d(conv_layer, ksize=[1, pooling_size, pooling_size, 1], strides=[1, pooling_size, pooling_size, 1], padding='SAME')
+    
+    # Convert tensor to numpy array
+    processed_image = pooled_layer.numpy().squeeze().astype(np.uint8)
+    
+    # Display processed image
+    st.image(processed_image, caption='Processed Image', use_column_width=True)
 
-    # Function to apply kernel operation
-    def apply_kernel(image, operation):
-        if operation == "Average":
-            kernel = np.ones((3, 3), np.float32) / 9
-        elif operation == "Max":
-            kernel = np.ones((3, 3), np.float32) / 9  # Placeholder, max pooling is different
-        return cv2.filter2D(image, -1, kernel)
-
-    # Function to apply pooling operation
-    def apply_pooling(image, operation):
-        if operation == "Average Pooling":
-            return cv2.blur(image, (2, 2))
-        elif operation == "Max Pooling":
-            return cv2.dilate(image, np.ones((2, 2), np.uint8))
-
-    processed_image = apply_kernel(image, kernel_option)
-    st.image(processed_image, caption=f'Image after {kernel_option} Kernel Operation', use_column_width=True)
-
-    pooled_image = apply_pooling(processed_image, pooling_option)
-    st.image(pooled_image, caption=f'Image after {pooling_option}', use_column_width=True)
 
