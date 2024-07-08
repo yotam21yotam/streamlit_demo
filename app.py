@@ -3,14 +3,14 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
 # Title of the app
-st.title("Interactive Machine Learning App by Yotam")
+st.title("Interactive Machine Learning and Distribution App by Yotam")
 
 # Header
 st.header("Explore Different Models, Visualizations, and Distributions")
@@ -46,6 +46,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Define models
 models = {
     "Linear Regression": LinearRegression(),
+    "Ridge Regression": Ridge(alpha=1.0),
+    "Lasso Regression": Lasso(alpha=0.1),
     "Decision Tree": DecisionTreeRegressor(),
     "Random Forest": RandomForestRegressor(n_estimators=100)
 }
