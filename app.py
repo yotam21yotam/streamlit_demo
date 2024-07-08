@@ -160,10 +160,7 @@ if st.checkbox("Show raw data"):
 
 
 import tensorflow as tf
-import numpy as np
-import streamlit as st
 from skimage import io
-import matplotlib.pyplot as plt
 
 # Image Processing Section
 st.sidebar.header("Image Processing")
@@ -182,18 +179,17 @@ if uploaded_file is not None:
     pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
     pooling_size = st.sidebar.slider("Pooling Size", 2, 5, 2)
     
-    # Convert image to tensor
+    # Convert image to tensor and add batch dimension
     image_tensor = tf.convert_to_tensor(image, dtype=tf.float32)
+    image_tensor = tf.image.resize(image_tensor, [256, 256])  # Resize for consistency
     image_tensor = tf.expand_dims(image_tensor, axis=0)
-    
-    # Define kernel
-    if kernel_option == "Average":
-        kernel = tf.ones((kernel_size, kernel_size, image.shape[-1], 1)) / (kernel_size * kernel_size)
-    elif kernel_option == "Max":
-        kernel = tf.ones((kernel_size, kernel_size, image.shape[-1], 1))
-    
+
     # Apply kernel operation
-    conv_layer = tf.nn.conv2d(image_tensor, kernel, strides=[1, 1, 1, 1], padding='SAME')
+    if kernel_option == "Average":
+        kernel = tf.ones((kernel_size, kernel_size, image_tensor.shape[-1], 1)) / (kernel_size * kernel_size)
+        conv_layer = tf.nn.conv2d(image_tensor, kernel, strides=[1, 1, 1, 1], padding='SAME')
+    elif kernel_option == "Max":
+        conv_layer = tf.nn.max_pool2d(image_tensor, ksize=[1, kernel_size, kernel_size, 1], strides=[1, 1, 1, 1], padding='SAME')
     
     # Apply pooling operation
     if pooling_option == "Average Pooling":
@@ -206,5 +202,4 @@ if uploaded_file is not None:
     
     # Display processed image
     st.image(processed_image, caption='Processed Image', use_column_width=True)
-
 
