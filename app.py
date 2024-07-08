@@ -155,3 +155,47 @@ st.pyplot(fig)
 if st.checkbox("Show raw data"):
     st.subheader('Raw Data')
     st.write(pd.DataFrame(X_cluster, columns=['Feature 1', 'Feature 2']))
+
+
+
+
+import cv2
+from skimage import io
+from skimage.transform import resize
+
+# Image Processing Section
+st.sidebar.header("Image Processing")
+
+uploaded_file = st.sidebar.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image = io.imread(uploaded_file)
+    st.image(image, caption='Uploaded Image', use_column_width=True)
+    
+    st.sidebar.subheader("Kernel Operation")
+    kernel_option = st.sidebar.selectbox("Choose Kernel Operation", ["Average", "Max"])
+
+    st.sidebar.subheader("Pooling Operation")
+    pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
+
+    # Function to apply kernel operation
+    def apply_kernel(image, operation):
+        if operation == "Average":
+            kernel = np.ones((3, 3), np.float32) / 9
+        elif operation == "Max":
+            kernel = np.ones((3, 3), np.float32) / 9  # Placeholder, max pooling is different
+        return cv2.filter2D(image, -1, kernel)
+
+    # Function to apply pooling operation
+    def apply_pooling(image, operation):
+        if operation == "Average Pooling":
+            return cv2.blur(image, (2, 2))
+        elif operation == "Max Pooling":
+            return cv2.dilate(image, np.ones((2, 2), np.uint8))
+
+    processed_image = apply_kernel(image, kernel_option)
+    st.image(processed_image, caption=f'Image after {kernel_option} Kernel Operation', use_column_width=True)
+
+    pooled_image = apply_pooling(processed_image, pooling_option)
+    st.image(pooled_image, caption=f'Image after {pooling_option}', use_column_width=True)
+
