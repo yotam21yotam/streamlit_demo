@@ -159,7 +159,8 @@ if st.checkbox("Show raw data"):
 
 
 
-import tensorflow as tf
+
+import cv2
 from skimage import io
 
 # Image Processing Section
@@ -179,27 +180,29 @@ if uploaded_file is not None:
     pooling_option = st.sidebar.selectbox("Choose Pooling Operation", ["Average Pooling", "Max Pooling"])
     pooling_size = st.sidebar.slider("Pooling Size", 2, 5, 2)
     
-    # Convert image to tensor and add batch dimension
-    image_tensor = tf.convert_to_tensor(image, dtype=tf.float32)
-    image_tensor = tf.image.resize(image_tensor, [256, 256])  # Resize for consistency
-    image_tensor = tf.expand_dims(image_tensor, axis=0)
-
     # Apply kernel operation
-    if kernel_option == "Average":
-        kernel = tf.ones((kernel_size, kernel_size, image_tensor.shape[-1], 1)) / (kernel_size * kernel_size)
-        conv_layer = tf.nn.conv2d(image_tensor, kernel, strides=[1, 1, 1, 1], padding='SAME')
-    elif kernel_option == "Max":
-        conv_layer = tf.nn.max_pool2d(image_tensor, ksize=[1, kernel_size, kernel_size, 1], strides=[1, 1, 1, 1], padding='SAME')
+    def apply_kernel(image, kernel_size, operation):
+        if operation == "Average":
+            kernel = np.ones((kernel_size, kernel_size), np.float32) / (kernel_size * kernel_size)
+            return cv2.filter2D(image, -1, kernel)
+        elif operation == "Max":
+            return cv2.dilate(image, np.ones((kernel_size, kernel_size), np.uint8))
     
     # Apply pooling operation
-    if pooling_option == "Average Pooling":
-        pooled_layer = tf.nn.avg_pool2d(conv_layer, ksize=[1, pooling_size, pooling_size, 1], strides=[1, pooling_size, pooling_size, 1], padding='SAME')
-    elif pooling_option == "Max Pooling":
-        pooled_layer = tf.nn.max_pool2d(conv_layer, ksize=[1, pooling_size, pooling_size, 1], strides=[1, pooling_size, pooling_size, 1], padding='SAME')
+    def apply_pooling(image, pooling_size, operation):
+        if operation == "Average Pooling":
+            return cv2.blur(image, (pooling_size, pooling_size))
+        elif operation == "Max Pooling":
+            return cv2.dilate(image, np.ones((pooling_size, pooling_size), np.uint8))
     
-    # Convert tensor to numpy array
-    processed_image = pooled_layer.numpy().squeeze().astype(np.uint8)
+    # Convert image to BGR format for OpenCV
+    image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     
-    # Display processed image
-    st.image(processed_image, caption='Processed Image', use_column_width=True)
+    # Apply kernel operation
+    processed_image = apply_kernel(image_bgr, kernel_size, kernel_option)
+    st.image(cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB), caption=f'Image after {kernel_option} Kernel Operation', use_column_width=True)
+    
+    # Apply pooling operation
+    pooled_image = apply_pooling(processed_image, pooling_size, pooling_option)
+    st.image(cv2.cvtColor(pooled_image, cv2.COLOR_BGR2RGB), caption=f'Image after {pooling_option}', use_column_width=True)
 
