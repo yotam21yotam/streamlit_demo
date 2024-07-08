@@ -160,6 +160,7 @@ if st.checkbox("Show raw data"):
 
 
 
+
 import cv2
 from skimage import io
 
@@ -191,9 +192,13 @@ if uploaded_file is not None:
     # Apply pooling operation
     def apply_pooling(image, pooling_size, operation):
         if operation == "Average Pooling":
-            return cv2.blur(image, (pooling_size, pooling_size))
+            return cv2.resize(image, (image.shape[1]//pooling_size, image.shape[0]//pooling_size))
         elif operation == "Max Pooling":
-            return cv2.dilate(image, np.ones((pooling_size, pooling_size), np.uint8))
+            pooled = np.zeros((image.shape[0]//pooling_size, image.shape[1]//pooling_size, image.shape[2]), dtype=np.uint8)
+            for i in range(0, image.shape[0], pooling_size):
+                for j in range(0, image.shape[1], pooling_size):
+                    pooled[i//pooling_size, j//pooling_size] = np.max(image[i:i+pooling_size, j:j+pooling_size], axis=(0,1))
+            return pooled
     
     # Convert image to BGR format for OpenCV
     image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -204,5 +209,5 @@ if uploaded_file is not None:
     
     # Apply pooling operation
     pooled_image = apply_pooling(processed_image, pooling_size, pooling_option)
+    pooled_image = cv2.resize(pooled_image, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)  # Resize back to original for display
     st.image(cv2.cvtColor(pooled_image, cv2.COLOR_BGR2RGB), caption=f'Image after {pooling_option}', use_column_width=True)
-
