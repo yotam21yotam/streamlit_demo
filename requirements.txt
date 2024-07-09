@@ -1,3 +1,13 @@
 streamlit
 transformers
 torch
+opencv-python
+scikit-image
+opencv-python-headless
+tensorflow
+torch
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
