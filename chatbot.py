@@ -73,7 +73,10 @@ qa_pipeline = pipeline("question-answering", model=model_path)
 user_input = st.text_input("Type your question here:")
 
 if user_input:
-    # Generate response using the model
-    response = qa_pipeline({'question': user_input, 'context': context})
-    answer = response['answer']
-    st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
+    try:
+        # Generate response using the model
+        response = qa_pipeline({'question': user_input, 'context': context})
+        answer = response['answer']
+        st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
