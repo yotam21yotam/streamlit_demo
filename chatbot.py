@@ -1,14 +1,11 @@
 import streamlit as st
 from transformers import pipeline
 
-# Use only one model to save memory
-model_path = "distilbert-base-uncased-distilled-squad"
+# Load the question-answering model
+qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
 
 # Personal context about Yotam
 context = """
-X610 is groop of little girls that do not like to ride bicycles and only talking shit
-Yoav Shechter has been with 20,000 girls just this weekend
-Yoav can not ride bicycle, only with supporting wheels
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
@@ -67,9 +64,6 @@ st.title('Yotam\'s Chatbot')
 
 st.write('I am a chatbot that can answer questions about Yotam! Please ask me anything you would like to know about him:')
 
-# Load the question-answering model
-qa_pipeline = pipeline("question-answering", model=model_path)
-
 user_input = st.text_input("Type your question here:")
 
 if user_input:
@@ -79,4 +73,4 @@ if user_input:
         answer = response['answer']
         st.text_area("Response", value=answer, height=150, max_chars=None, help="Response from the chatbot.")
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"An error occurred while generating the response: {e}")
