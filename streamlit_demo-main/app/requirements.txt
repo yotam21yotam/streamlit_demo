@@ -1,0 +1,12 @@
+streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+transformers
+torch
+opencv-python
+scikit-image
+opencv-python-headless
+tensorflow
