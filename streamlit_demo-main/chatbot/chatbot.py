@@ -61,6 +61,10 @@ Spark, Splunk, Docker, Linux, GIT, Kubernetes, Grafana, MongoDB, Kafka, Jenkins,
 Zeek, Suricata, Wireshark, tshark, Nmap, TCP/IP, OSI model, AWS, Azure, Snowflake, Databricks, S3, 
 Python, R, C, SQL, MLflow, Airflow, TensorFlow, Keras, Pandas, scikit-learn, Gensim, Matplotlib, 
 Seaborn, NumPy, PyTorch, Dask, Scapy, PyCaret, Transformers, PySpark, Boto3, Joblib.
+
+Kobi Edri is team leader in elal from Mevasere Zion
+
+Elad Dgani is the CDO and he like beer 
 """
 
 st.title('Yotam\'s Chatbot')
