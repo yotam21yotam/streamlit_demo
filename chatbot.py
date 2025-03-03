@@ -2,7 +2,9 @@ import streamlit as st
 from transformers import pipeline
 
 # Load the question-answering model
-qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
+# qa_pipeline = pipeline("question-answering", model="distilbert-base-uncased-distilled-squad")
+qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2")
+
 
 # Personal context about Yotam
 context = """
