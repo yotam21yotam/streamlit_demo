@@ -6,14 +6,11 @@ model_path = "distilbert-base-uncased-distilled-squad"
 
 # Personal context about Yotam
 context = """
-X610 is groop of little girls that do not like to ride bicycles and only talking shit
-Yoav Shechter has been with 20,000 girls just this weekend
-Yoav can not ride bicycle, only with supporting wheels
-I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
-and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
-production across various organizations, enhancing their ability to leverage data effectively. 
-My diverse experience has equipped me with a unique blend of skills, making me a quick learner and 
-a creative problem solver who brings insightful and innovative solutions to complex challenges.
+Kobi Edri is team leader in elal from Mevasere Zion
+
+Elad Dgani is the CDO and he like beer 
+
+
 
 Key Details:
 - Age: I am 36 years old.
