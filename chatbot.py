@@ -137,7 +137,7 @@ from transformers import pipeline
 import streamlit as st
 
 # Load a generative model (T5 for Question Answering)
-qa_pipeline = pipeline("text2text-generation", model="t5-small")  # Use "t5-large" for better results
+qa_pipeline = pipeline("text2text-generation", model="t5-large")  # Use "t5-large" for better results
 
 # Context about Yotam
 context = """
