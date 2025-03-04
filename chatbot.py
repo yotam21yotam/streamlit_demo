@@ -12,6 +12,7 @@ context = """
 Kobi Edri is a software team leader in ELAL
 Elad Dgani is CDO in ELAL and he likes to drink beer
 Elad Dgani like Italian cars specifically Alpha Romeo
+Elad Dgani has 5 kids
 Alpha Romeo is not a reliable car ubt it can be exciting in some ways
 Michal Unger is product menager in ELAL
 michal unger is 30 years old
