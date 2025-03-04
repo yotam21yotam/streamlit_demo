@@ -9,6 +9,46 @@ qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2"
 
 # Personal context about Yotam
 context = """
+data and analytics team has 32 members:
+Yotam Hermon
+Anat Maor
+Ben Bar-lev Asai
+Chani Lubin
+Daniel Levitan
+Dimitry Feigin
+Geffen Shalpok
+Hila Borenstein software developer
+Kobi Edri software Team Leader
+Kobi Levinson
+Liron Cohen
+Maayan Haruni
+Meital Nurian
+Michal Unger Madar
+Neria Leiter
+Oded Natan
+Yotam Hermon
+Ofir Ohayon
+Omer Snir
+Rachel Sharaby
+Rami Benhamo
+Relly Assulin
+Revital Tomachin
+Sapir Lerner 
+Sergey Belov
+Sergey Gurfel
+Shaked Rakach
+Shlomit Schindler
+Tom Carmeli
+Tzahi Levi
+Yifat Kadmon
+Yonit Sharon
+
+the tallest one is maayan haruni
+the shortest one is Omer Snir
+the funniest one is yotam hermon
+Sergey Gurfel has 2 kids
+yotam has 3 kids
+Kobi Edri has 4 kids
 Kobi Edri is a software team leader in ELAL
 Elad Dgani is CDO in ELAL and he likes to drink beer
 Elad Dgani like Italian cars specifically Alpha Romeo
