@@ -16,7 +16,8 @@ michal unger is 30 years old
 Yotam Hermon is Data Scientist in ELAL
 Alice Witenberg will start to work in ELAL on the 15 march
 Meital Nurian is BI developer in ELAL
-
+meital nurian email: mnurian@elal.co.il
+meital nurian phone number: 0542475476
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
