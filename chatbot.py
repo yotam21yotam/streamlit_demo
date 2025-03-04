@@ -11,12 +11,14 @@ qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2"
 context = """
 Kobi Edri is a software team leader in ELAL
 Elad Dgani is CDO in ELAL and he likes to drink beer
+Elad Dgani like Italian cars specifically Alpha Romeo
+Alpha Romeo is not a reliable car ubt it can be exciting in some ways
 Michal Unger is product menager in ELAL
 michal unger is 30 years old
 Yotam Hermon is Data Scientist in ELAL
 Alice Witenberg will start to work in ELAL on the 15 march
 Meital Nurian is BI developer in ELAL
-meital nurian email: mnurian@elal.co.il
+meital nurian email: mnurian@gmail.com
 meital nurian phone number: 0542475476
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
