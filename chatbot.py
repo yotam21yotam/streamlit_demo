@@ -9,7 +9,7 @@ qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2"
 
 # Personal context about Yotam
 context = """
-data and analytics team has 32 members:
+data and analytics team in ELAL has 32 members:
 Yotam Hermon
 Anat Maor
 Ben Bar-lev Asai
