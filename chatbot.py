@@ -11,6 +11,12 @@ qa_pipeline = pipeline("question-answering", model="deepset/roberta-base-squad2"
 context = """
 Kobi Edri is a software team leader in ELAL
 Elad Dgani is CDO in ELAL and he likes to drink beer
+Michal Unger is product menager in ELAL
+michal unger is 30 years old
+Yotam Hermon is Data Scientist in ELAL
+Alice Witenberg will start to work in ELAL on the 15 march
+Meital Nurian is BI developer in ELAL
+
 I am Yotam, a Data Scientist and ML Engineer with a robust background in Statistics, Machine Learning engineering, 
 and cybersecurity. I have built ML pipelines and led projects from proof of concept (POC) to 
 production across various organizations, enhancing their ability to leverage data effectively. 
@@ -18,7 +24,7 @@ My diverse experience has equipped me with a unique blend of skills, making me a
 a creative problem solver who brings insightful and innovative solutions to complex challenges.
 
 Key Details:
-- Age: I am 36 years old.
+- Age: I am 37 years old.
 - Email: You can contact me at yotam21@gmail.com.
 - Residence: I live in Tel Aviv.
 - Current Position: I am currently working at the Prime Minister's Office as a Data Scientist 
